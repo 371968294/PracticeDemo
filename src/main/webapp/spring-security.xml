@@ -1,0 +1,41 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+          http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+          http://www.springframework.org/schema/security
+          http://www.springframework.org/schema/security/spring-security-3.2.xsd">
+
+    <!--通过下面也可以对该URL放行-->
+    <!--<security:http security="none" pattern="/login.jsp" />-->
+
+    <!-- 认证成功后的处理类 -->
+    <bean id="authSuccess" class="com.huskey.handler.AuthenticationSuccessHandlerImpl"/>
+
+    <security:http auto-config="true">
+        <security:form-login login-page="/login.jsp"
+                             username-parameter="username" password-parameter="password" />
+                             <!--authentication-success-handler-ref="authSuccess"/>-->
+        <security:intercept-url pattern="/com" access="ROLE_USER"/>
+        <security:intercept-url pattern="/login.jsp" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
+    </security:http>
+
+    <security:authentication-manager>
+        <security:authentication-provider>
+            <!--还支持通过properties文件来指定用户信息-->
+            <!--<security:user-service properties="user.properties"/>-->
+
+            <security:user-service>
+                <security:user name="user" password="user" authorities="ROLE_USER"/>
+                <security:user name="admin" password="admin" authorities="ROLE_USER, ROLE_ADMIN"/>
+            </security:user-service>
+        </security:authentication-provider>
+    </security:authentication-manager>
+
+    <!--<security:authentication-manager>-->
+        <!--<security:authentication-provider user-service-ref="userDetailsService">-->
+            <!--<security:password-encoder hash="md5"/>-->
+        <!--</security:authentication-provider>-->
+    <!--</security:authentication-manager>-->
+
+</beans>
